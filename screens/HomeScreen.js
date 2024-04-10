@@ -16,12 +16,14 @@ import {
 } from "react-native-heroicons/outline";
 import TrendingMovies from "../components/trendingMovies";
 import MovieList from "../components/MovieList";
+import Loading from "../components/Loading";
 const ios = Platform.OS == "ios";
 
 export default function HomeScreen() {
   const [trending, setTrending] = useState([1, 2, 3]);
   const [upcoming, setUpcoming] = useState([1, 2, 3]);
   const [topRated, setTopRated] = useState([1, 2, 3]);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   return (
     <View className="flex-1 bg-neutral-800">
@@ -42,17 +44,21 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 10 }}
-      >
-        {/* trending movie carousal */}
-        <TrendingMovies data={trending}></TrendingMovies>
-        {/* upcoming movie carousal */}
-        <MovieList title="Upcoming" data={upcoming}></MovieList>
-        {/* TopRated movie carousal */}
-        <MovieList title="Top Rated" data={topRated}></MovieList>
-      </ScrollView>
+      {loading ? (
+        <Loading />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 10 }}
+        >
+          {/* trending movie carousal */}
+          <TrendingMovies data={trending}></TrendingMovies>
+          {/* upcoming movie carousal */}
+          <MovieList title="Upcoming" data={upcoming}></MovieList>
+          {/* TopRated movie carousal */}
+          <MovieList title="Top Rated" data={topRated}></MovieList>
+        </ScrollView>
+      )}
     </View>
   );
 }
