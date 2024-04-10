@@ -14,7 +14,7 @@ export default function TrendingMovies({ data }) {
   const navigation = useNavigation();
 
   const handleClick = (item) => {
-    navigation.navigate("Movie", Item);
+    navigation.navigate("Movie", item);
   };
   return (
     <View className="mb-8">
