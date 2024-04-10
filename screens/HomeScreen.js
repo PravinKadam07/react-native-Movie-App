@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,7 +22,7 @@ export default function HomeScreen() {
   const [trending, setTrending] = useState([1, 2, 3]);
   const [upcoming, setUpcoming] = useState([1, 2, 3]);
   const [topRated, setTopRated] = useState([1, 2, 3]);
-
+  const navigation = useNavigation();
   return (
     <View className="flex-1 bg-neutral-800">
       {/* search bar and logo */}
@@ -33,7 +33,7 @@ export default function HomeScreen() {
           <Text className="text-white text-3xl font-bold">
             <Text style={{ color: "#eab308" }}>M</Text>ovies
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Search")}>
             <MagnifyingGlassIcon
               size="35"
               strokeWidth={2}
