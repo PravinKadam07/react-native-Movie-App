@@ -5,9 +5,11 @@ import {
   Dimensions,
   Image,
 } from "react-native";
+
 import React from "react";
 import Carousel from "react-native-snap-carousel-new";
 import { useNavigation } from "@react-navigation/native";
+import { image500, posterFallBackImage } from "../api/movieDB";
 var { width, height } = Dimensions.get("window");
 
 export default function TrendingMovies({ data }) {
@@ -18,7 +20,9 @@ export default function TrendingMovies({ data }) {
   };
   return (
     <View className="mb-8">
-      <Text className="text-white text-xl mx-4 mb-5">Trending</Text>
+      <Text className="text-white text-2xl font-semibold mx-1 mb-5">
+        Trending
+      </Text>
       <Carousel
         data={data}
         renderItem={({ item }) => (
@@ -38,7 +42,7 @@ const MovieCard = ({ item, handleClick }) => {
   return (
     <TouchableWithoutFeedback onPress={() => handleClick(item)}>
       <Image
-        source={require("../assets/MoviePoster.png")}
+        source={{ uri: image500(item.poster_path) || posterFallBackImage }}
         style={{
           width: width * 0.6,
           height: height * 0.4,

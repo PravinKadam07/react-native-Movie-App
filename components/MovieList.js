@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
+import { image185 } from "../api/movieDB";
 
 var { width, height } = Dimensions.get("window");
 
@@ -42,14 +43,14 @@ export default function MovieList({ title, data, hideSeeAll }) {
             >
               <View className="space-y-1 mr-4">
                 <Image
-                  source={require("../assets/MoviePoster.png")}
+                  source={{ uri: image185(item.poster_path) }}
                   className="rounded-3xl"
                   style={{ width: width * 0.33, height: height * 0.22 }}
                 />
                 <Text className="text-neutral-300 ml-1">
-                  {movieName.length > 14
-                    ? movieName.slice(0, 14) + "..."
-                    : movieName}
+                  {item.title.length > 14
+                    ? item.title.slice(0, 14) + "..."
+                    : item.title}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
