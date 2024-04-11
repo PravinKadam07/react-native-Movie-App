@@ -9,22 +9,43 @@ import {
   Image,
 } from "react-native";
 import React from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { XMarkIcon } from "react-native-heroicons/outline";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../components/Loading";
-
+import { debounce } from "lodash";
+import { image185, posterFallBackImage, searchMovie } from "../api/movieDB";
 var { width, height } = Dimensions.get("window");
+
 export default function SearchScreen() {
-  const movieName = "Hail hydra avenderendgame";
-  const [results, setResults] = useState([1, 2, 3, 4]);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+
+  const handleSearch = (value) => {
+    if (value && value.length > 2) {
+      searchMovie({
+        query: value,
+        include_adult: "false",
+        language: "en-US",
+        page: "1",
+      }).then((data) => {
+        setLoading(false);
+        if (data && data.results) setResults(data.results);
+      });
+    } else {
+      setLoading(false);
+      setResults([]);
+    }
+  };
+  const textDebounceHandle = useCallback(debounce(handleSearch, 400), []);
+
   return (
     <SafeAreaView className="bg-neutral-800 flex-1">
       <View className="mx-3 mb-3 flex-row justify-between items-center border border-neutral-400 rounded-full">
         <TextInput
+          onChangeText={textDebounceHandle}
           placeholder="Search Movies"
           placeholderTextColor={"lightgray"}
           className="text-white font-semibold pb-2 pl-6 tracking-wider text-base flex-1 "
@@ -63,13 +84,15 @@ export default function SearchScreen() {
                   <View className="space-y-2 mb-4">
                     <Image
                       className="rounded-3xl"
-                      source={require("../assets/MoviePoster.png")}
+                      source={{
+                        uri: image185(item.poster_path) || posterFallBackImage,
+                      }}
                       style={{ width: width * 0.44, height: height * 0.3 }}
                     ></Image>
                     <Text className="text-neutral-400 ml-1">
-                      {movieName.length > 22
-                        ? movieName.slice(0, 22) + "..."
-                        : movieName}
+                      {item?.title.length > 22
+                        ? item?.title.slice(0, 22) + "..."
+                        : item?.title}
                     </Text>
                   </View>
                 </TouchableWithoutFeedback>
