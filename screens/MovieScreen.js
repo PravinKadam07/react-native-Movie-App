@@ -45,6 +45,7 @@ export default function MovieScreen() {
   }, [item]);
 
   const getMovieDetails = async (id) => {
+    setLoading(true);
     const data = await fetchMovieDetails(id);
     if (data) setMovie(data);
 
@@ -52,12 +53,14 @@ export default function MovieScreen() {
   };
 
   const getMovieCredits = async (id) => {
+    setLoading(true);
     const data = await fetchMovieCredit(id);
     if (data && data.cast) setCast(data.cast);
 
     setLoading(false);
   };
   const getSimilarmovies = async (id) => {
+    setLoading(true);
     const data = await fetchSimilarMovies(id);
     if (data && data.results) setSimilarMovies(data.results);
     setLoading(false);

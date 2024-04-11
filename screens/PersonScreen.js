@@ -12,9 +12,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeftIcon } from "react-native-heroicons/outline";
 import { HeartIcon } from "react-native-heroicons/solid";
 import { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import MovieList from "../components/MovieList";
 import Loading from "../components/Loading";
+import {
+  fetchPersonDetails,
+  fetchPersonMovies,
+  image342,
+  personFallBackImage,
+} from "../api/movieDB";
 var { width, height } = Dimensions.get("window");
 
 const ios = Platform.OS == "ios";
@@ -22,9 +28,32 @@ const VMargin = ios ? " " : "my-3";
 
 export default function PersonScreen() {
   const [isFav, toggleFav] = useState(false);
-  const [personMovies, setPersonMovies] = useState([1, 2, 3, 4]);
+  const [personMovies, setPersonMovies] = useState([]);
+  const [person, setPerson] = useState({});
   const [loading, setLoading] = useState(false);
+  const { params: item } = useRoute();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    setLoading(true);
+    getPersonDetails(item.id);
+    getPersonMovies(item.id);
+  }, [item]);
+
+  const getPersonDetails = async (id) => {
+    setLoading(true);
+    const data = await fetchPersonDetails(id);
+    if (data) setPerson(data);
+    setLoading(false);
+  };
+
+  const getPersonMovies = async (id) => {
+    setLoading(true);
+    const data = await fetchPersonMovies(id);
+    if (data && data.cast) setPersonMovies(data.cast);
+    setLoading(false);
+  };
+
   return (
     <ScrollView
       contentContainerStyle={{ paddingBottom: 20 }}
@@ -78,7 +107,9 @@ export default function PersonScreen() {
           >
             <View className="overflow-hidden items-center rounded-full h-72 w-72 border-1 border-neutral-400  ">
               <Image
-                source={require("../assets/MoviePoster.png")}
+                source={{
+                  uri: image342(person?.profile_path) || personFallBackImage,
+                }}
                 style={{ height: height * 0.43, width: width * 0.73 }}
               ></Image>
             </View>
@@ -86,44 +117,42 @@ export default function PersonScreen() {
 
           <View className="mt-6">
             <Text className="text-center text-white text-3xl font-bold">
-              John Wick
+              {person?.name}
             </Text>
             <Text className="text-base text-neutral-500 text-center">
-              London ,UK
+              {person?.place_of_birth}
             </Text>
           </View>
           <View className="mx-3 mt-6 p-4 flex-row justify-between items-center bg-neutral-700 rounded-full">
             <View className="border-r-2 border-r-neutral-200 px-2 items-center">
               <Text className="text-white font-semibold">Gender</Text>
-              <Text className="text-neutral-300 text-sm">male</Text>
+              <Text className="text-neutral-300 text-sm">
+                {person?.gender == 1 ? "Female" : "Male"}
+              </Text>
             </View>
             <View className="border-r-2 border-r-neutral-200 px-3 items-center">
               <Text className="text-white font-semibold">Birthday</Text>
-              <Text className="text-neutral-300 text-sm">1968-02-21</Text>
+              <Text className="text-neutral-300 text-sm">
+                {person?.birthday}
+              </Text>
             </View>
             <View className="border-r-2 border-r-neutral-200 px-2 items-center">
               <Text className="text-white font-semibold">Known For</Text>
-              <Text className="text-neutral-300 text-sm">Acting</Text>
+              <Text className="text-neutral-300 text-sm">
+                {person?.known_for_department}
+              </Text>
             </View>
             <View className="">
               <Text className="text-white font-semibold">Popularity</Text>
-              <Text className="text-neutral-300 text-sm">64.23</Text>
+              <Text className="text-neutral-300 text-sm">
+                {person?.popularity?.toFixed(2)} %
+              </Text>
             </View>
           </View>
           <View className="my-6 mx-4 space-y-2">
             <Text className="text-white text-lg">Biography</Text>
             <Text className="text-neutral-400 tracking-wide">
-              Keanu Reeves is a Canadian actor, producer, and musician, born on
-              September 2, 1964, in Beirut, Lebanon. He rose to fame for his
-              roles in iconic films such as "The Matrix" trilogy, "Speed," and
-              "John Wick" series. Reeves' acting style often embodies stoicism
-              and intense physicality, earning him praise for his versatility
-              and dedication to his craft. Despite personal tragedies, including
-              the loss of loved ones, Reeves has maintained a humble and private
-              demeanor. He is also known for his philanthropy, including his
-              involvement in cancer research and children's hospitals. Reeves is
-              widely regarded as one of Hollywood's most beloved and respected
-              actors.
+              {person?.biography || "N/A"}
             </Text>
           </View>
           {/* movie list */}

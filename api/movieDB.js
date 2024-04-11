@@ -15,8 +15,13 @@ const movieCredits = (id) =>
 const similarMovieDetails = (id) =>
   `${apiBaseUrl}/movie/${id}/similar?api_key=${apiKey}`;
 
+const personDetails = (id) => `${apiBaseUrl}/person/${id}?api_key=${apiKey}`;
+
+const personMovies = (id) =>
+  `${apiBaseUrl}/person/${id}/movie_credits?api_key=${apiKey}`;
+
 export const posterFallBackImage =
-  "https://cinesura.com/storage/poster-unavailable.png?1712494834";
+  "https://img.jagrantv.com/web-stories/no-image.jpg";
 
 export const personFallBackImage =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJxO2jo9HIP5lGk8fElgwnep1VHH289efwq1cnrCGmCw&s";
@@ -65,4 +70,12 @@ export const fetchMovieCredit = (id) => {
 };
 export const fetchSimilarMovies = (id) => {
   return apiCall(similarMovieDetails(id));
+};
+
+export const fetchPersonDetails = (id) => {
+  return apiCall(personDetails(id));
+};
+
+export const fetchPersonMovies = (id) => {
+  return apiCall(personMovies(id));
 };
