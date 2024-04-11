@@ -17,21 +17,52 @@ import { LinearGradient } from "expo-linear-gradient";
 import Cast from "../components/Cast";
 import MovieList from "../components/MovieList";
 import Loading from "../components/Loading";
+import {
+  fetchMovieCredit,
+  fetchSimilarMovies,
+  image500,
+  posterFallBackImage,
+} from "../api/movieDB";
+import { fetchMovieDetails } from "../api/movieDB";
 var { width, height } = Dimensions.get("window");
 const ios = Platform.OS == "ios";
 const topMargin = ios ? " " : "mt-3";
 
 export default function MovieScreen() {
-  let movieName = "Mazeee";
   const { params: item } = useRoute();
   const navigation = useNavigation();
   const [isFav, toggleFav] = useState(false);
-  const [cast, setCast] = useState([1, 2, 3, 4]);
-  const [similarMovies, setSimilarMovies] = useState([1, 2, 3, 4]);
+  const [cast, setCast] = useState([]);
+  const [similarMovies, setSimilarMovies] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [movie, setMovie] = useState({});
+
   useEffect(() => {
-    //calling movie api for the data
+    setLoading(true);
+    getMovieDetails(item.id);
+    getMovieCredits(item.id);
+    getSimilarmovies(item.id);
   }, [item]);
+
+  const getMovieDetails = async (id) => {
+    const data = await fetchMovieDetails(id);
+    if (data) setMovie(data);
+
+    setLoading(false);
+  };
+
+  const getMovieCredits = async (id) => {
+    const data = await fetchMovieCredit(id);
+    if (data && data.cast) setCast(data.cast);
+
+    setLoading(false);
+  };
+  const getSimilarmovies = async (id) => {
+    const data = await fetchSimilarMovies(id);
+    if (data && data.results) setSimilarMovies(data.results);
+    setLoading(false);
+  };
+
   return (
     <ScrollView
       contentContainerStyle={{ paddingBottom: 20 }}
@@ -74,7 +105,9 @@ export default function MovieScreen() {
       ) : (
         <>
           <Image
-            source={require("../assets/MoviePoster.png")}
+            source={{
+              uri: image500(movie?.poster_path) || posterFallBackImage,
+            }}
             style={{ width: width, height: height * 0.65, resizeMode: "cover" }} // Adjust styles
           />
           <LinearGradient
@@ -91,40 +124,44 @@ export default function MovieScreen() {
       <View style={{ marginTop: -(height * 0.09) }} className="space-y-3">
         {/* title */}
         <Text className="text-white text-3xl text-center tracking-wider font-bold">
-          {movieName}
+          {movie?.title}
         </Text>
         {/* stats ,release,runtime */}
-        <Text className="text-neutral-400 text-center text-base font-semibold">
-          Release &#xb7; 2020 &#xb7; 170 min
-        </Text>
+        {movie?.id ? (
+          <Text className="text-neutral-400 text-center text-base font-semibold">
+            {movie?.status} &#xb7; {movie?.release_date?.split("-")[0]} &#xb7;{" "}
+            {movie?.runtime} min
+          </Text>
+        ) : null}
+
         {/* genres*/}
         <View className="flex-row mx-4 justify-center space-x-2">
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Action &#xb7;
-          </Text>
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Thriller &#xb7;
-          </Text>
-          <Text className="text-neutral-400 font-semibold text-base text-center">
-            Comedy &#xb7;
-          </Text>
+          {movie?.genres?.map((genres, index) => {
+            let lastDot = index + 1 != movie.genres.length;
+            return (
+              <Text
+                key={index}
+                className="text-neutral-400 font-semibold text-base text-center"
+              >
+                {genres?.name}
+                {lastDot ? "  \u00B7" : null}
+              </Text>
+            );
+          })}
         </View>
         {/* Description*/}
         <Text className="text-neutral-400 tracking-wide mx-4 ">
-          is simply dummy text of the printing and typesetting industry. Lorem
-          Ipsum has been the industry's standard dummy text ever since the
-          1500s, when an unknown printer took a galley of type and scrambled it
-          to make a type specimen book. It has survived not only five centuries,
+          {movie?.overview}
         </Text>
       </View>
       {/* cast */}
       <Cast navigation={navigation} cast={cast} />
       {/* similar movies */}
-      {/* <MovieList
+      <MovieList
         title={"Similar Movies"}
-         data={similarMovies}
+        data={similarMovies}
         hideSeeAll={true}
-      ></MovieList> */}
+      ></MovieList>
     </ScrollView>
   );
 }

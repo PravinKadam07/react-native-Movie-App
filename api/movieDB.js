@@ -7,6 +7,14 @@ const trendingMoviesEndPoint = `${apiBaseUrl}/trending/movie/day?api_key=${apiKe
 const upcomingMoviesEndPoint = `${apiBaseUrl}/movie/upcoming?api_key=${apiKey}`;
 const topRatedMoviesEndPoint = `${apiBaseUrl}/movie/top_rated?api_key=${apiKey}`;
 
+//dynamic endpoints
+const movieDetails = (id) => `${apiBaseUrl}/movie/${id}?api_key=${apiKey}`;
+const movieCredits = (id) =>
+  `${apiBaseUrl}/movie/${id}/credits?api_key=${apiKey}`;
+
+const similarMovieDetails = (id) =>
+  `${apiBaseUrl}/movie/${id}/similar?api_key=${apiKey}`;
+
 export const posterFallBackImage =
   "https://cinesura.com/storage/poster-unavailable.png?1712494834";
 
@@ -47,4 +55,14 @@ export const fetchUpcomingMovies = () => {
 
 export const fetchTopRatedMovies = () => {
   return apiCall(topRatedMoviesEndPoint);
+};
+
+export const fetchMovieDetails = (id) => {
+  return apiCall(movieDetails(id));
+};
+export const fetchMovieCredit = (id) => {
+  return apiCall(movieCredits(id));
+};
+export const fetchSimilarMovies = (id) => {
+  return apiCall(similarMovieDetails(id));
 };
