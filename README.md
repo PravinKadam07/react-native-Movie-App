@@ -1,5 +1,5 @@
 # Movie App - React Native
-<img src="./project image.png">
+<img src="./MovieAppCover.png">
 Welcome to the Movie App, a React Native application that allows users to explore movies, view their details, discover related films, and check details of the cast members. This app utilizes the TMDB API as its backend to fetch movie data.
 
 ## Features
